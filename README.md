@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/ribbon-event_bus.svg)](http://badge.fury.io/rb/ribbon-event_bus) [![Code Climate](https://codeclimate.com/github/ribbon/event_bus/badges/gpa.svg)](https://codeclimate.com/github/ribbon/event_bus)
+
 # ribbon-event_bus
 
 A simple but flexible event bus for Ruby. With the recommended settings, it
