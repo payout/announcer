@@ -1,0 +1,12 @@
+subscriptions:
+  default_priority: medium
+
+publishers:
+  resque:
+    publisher_queue: publisher
+    subscription_queue_format: 'subscriptions_p%{priority}'
+
+  remote_resque:
+    queue: publisher
+    redis_namespace: resque
+    subscription_queue_format: 'subscriptions_p%{priority}'
