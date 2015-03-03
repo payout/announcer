@@ -7,6 +7,7 @@ Gem::Specification.new do |s|
   s.name        = 'ribbon-event_bus'
   s.version     = Ribbon::EventBus::VERSION
   s.homepage    = "http://github.com/ribbon/event_bus"
+  s.license     = 'BSD'
   s.summary     = "An asynchronous event bus for Ruby."
   s.description = s.summary
   s.authors     = ["Robert Honer"]
