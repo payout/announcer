@@ -32,6 +32,12 @@ module Ribbon::EventBus
       instance.subscriptions_to(self)
     end
 
+    def to_s
+      "Event(#{name}" <<
+        (params && !params.empty? && ", #{params.inspect}" or '') <<
+        ")"
+    end
+
     private
 
     ############################################################################
