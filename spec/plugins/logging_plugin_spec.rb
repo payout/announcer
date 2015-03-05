@@ -13,7 +13,7 @@ module Ribbon::EventBus
       context 'with resque publisher' do
         # Configure to publish to resque publisher
         before { instance.config { publish_to :resque } }
-        before { instance.subscribe_to(:test) {} }
+        before { instance.subscribe_to(:test, name: 'testing') {} }
         before(:all) { Resque.inline = true }
         after(:all) { Resque.inline = false }
 
@@ -72,6 +72,10 @@ module Ribbon::EventBus
             it { is_expected.to receive(:debug).with("Published Event(test)").once }
             it { is_expected.to receive(:debug).with("Publishing on Resque: Event(test)").once }
             it { is_expected.to receive(:debug).with("Published on Resque: Event(test)").once }
+            it { is_expected.to receive(:debug)
+              .with("Executing subscription: Subscription(test, testing)").once }
+            it { is_expected.to receive(:debug)
+              .with("Executed subscription: Subscription(test, testing)").once }
           end # without exception
 
           context 'with exception' do

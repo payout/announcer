@@ -11,14 +11,20 @@ module Ribbon::EventBus
 
       around_publish do |event|
         logger.debug("Publishing #{event}")
-        _run(subject: 'publishing', event: event) { publish }
+        _run(subject: 'publishing', object: event) { publish }
         logger.debug("Published #{event}")
       end
 
       around_resque_publish do |event|
         logger.debug("Publishing on Resque: #{event}")
-        _run(subject: 'publishing on resque', event: event) { resque_publish }
+        _run(subject: 'publishing on resque', object: event) { resque_publish }
         logger.debug("Published on Resque: #{event}")
+      end
+
+      around_subscription do |sub, event|
+        logger.debug("Executing subscription: #{sub}")
+        _run(subject: 'executing subscription', object: sub) { subscription }
+        logger.debug("Executed subscription: #{sub}")
       end
 
       private
@@ -52,7 +58,7 @@ module Ribbon::EventBus
           begin
             block.call
           rescue Exception => e
-            logger.fatal("Exception raised when %{subject} %{event}: #{e.inspect}" % params)
+            logger.fatal("Exception raised when %{subject} %{object}: #{e.inspect}" % params)
             raise
           end
         else

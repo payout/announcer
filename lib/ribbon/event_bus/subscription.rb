@@ -42,7 +42,13 @@ module Ribbon::EventBus
       raise Errors::UnexpectedEventError, 'wrong name' unless event.name == event_name
       raise Errors::UnexpectedEventError, 'wrong instance' unless event.instance == instance
 
-      @_block.call(event)
+      plugins.perform(:subscription, self, event) { |subscription, event|
+        @_block.call(event)
+      }
+    end
+
+    def to_s
+      "Subscription(#{event_name}, #{name})"
     end
 
     private
