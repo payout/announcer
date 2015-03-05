@@ -66,30 +66,12 @@ module Ribbon::EventBus
       elsif /^(\w+)\?$/.match(meth_str)
         !!_get($1)
       else
-        object = _get(meth)
-
-        if object.is_a?(UndefinedValue)
-          object = _set(meth, Config.new((name ? "#{name}." : '') + meth_str))
-        end
-
-        object
+        _get_or_create_namespace(meth)
       end
     end
 
     def nested(name)
       _nested[name.to_sym]
-    end
-
-    def nest_value(name, value)
-      nested()
-    end
-
-    def nested_values(key)
-      _nested_values[key.to_sym]
-    end
-
-    def nested_configs(namespace)
-      _nested_configs[namespace.to_sym]
     end
 
     def merge_hash!(hash)
@@ -111,6 +93,16 @@ module Ribbon::EventBus
     private
     def _get(key)
       _nested[key.to_sym]
+    end
+
+    def _get_or_create_namespace(key)
+      object = _get(key)
+
+      if object.is_a?(UndefinedValue)
+        object = _set(key, Config.new((name ? "#{name}." : '') + key.to_s))
+      end
+
+      object
     end
 
     def _set(key, *args, &block)
