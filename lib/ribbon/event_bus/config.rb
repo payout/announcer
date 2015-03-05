@@ -70,10 +70,6 @@ module Ribbon::EventBus
       end
     end
 
-    def nested(name)
-      _nested[name.to_sym]
-    end
-
     def merge_hash!(hash)
       hash.each { |k, v|
         if v.is_a?(Hash)
