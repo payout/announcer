@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ribbon-event_bus (0.1.0)
+    ribbon-event_bus (0.2.0)
       ribbon-plugins (~> 0.2, >= 0.2.4)
 
 GEM
