@@ -42,6 +42,11 @@ module Ribbon::EventBus
     class InvalidArityError < ProcPublisherError; end
 
     ###
+    # Plugin Errors
+    ###
+    class PluginError < Error; end
+
+    ###
     # Serializable Errors
     ###
     class SerializableError < Error; end

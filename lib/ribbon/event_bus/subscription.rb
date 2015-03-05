@@ -9,6 +9,7 @@ module Ribbon::EventBus
     config_key :subscriptions
     serialize_with :instance, :locator
 
+    attr_reader :name
     attr_reader :event_name
     attr_reader :priority
     attr_reader :locator
@@ -26,7 +27,9 @@ module Ribbon::EventBus
       @_block = block
 
       _evaluate_params(params)
-      _generate_locator
+
+      @name ||= _path
+      @locator = _generate_locator
 
       instance._register_subscription(self)
     end
@@ -38,12 +41,23 @@ module Ribbon::EventBus
     def handle(event)
       raise Errors::UnexpectedEventError, 'wrong name' unless event.name == event_name
       raise Errors::UnexpectedEventError, 'wrong instance' unless event.instance == instance
-      @_block.call(event)
+
+      plugins.perform(:subscription, self, event) { |subscription, event|
+        @_block.call(event)
+      }
+    end
+
+    def to_s
+      "Subscription(#{event_name}, #{name})"
     end
 
     private
 
-    def _generate_locator
+    def _path
+      @__path ||= _determine_path
+    end
+
+    def _determine_path
       path = File.expand_path('../..', __FILE__)
       non_event_bus_caller = caller.find { |c| !c.start_with?(path) }
 
@@ -52,7 +66,11 @@ module Ribbon::EventBus
         raise Errors::SubscriptionError, "Could not find non-EventBus caller"
       end
 
-      @locator = Digest::MD5.hexdigest(non_event_bus_caller).to_sym
+      non_event_bus_caller
+    end
+
+    def _generate_locator
+      Digest::MD5.hexdigest(_path).to_sym
     end
 
     ############################################################################
@@ -65,9 +83,9 @@ module Ribbon::EventBus
     # Root evaluation method.
     ###
     def _evaluate_params(params)
-      params = params.dup
-      @instance = params.delete(:instance)
-      @priority = _evaluate_priority(params.delete(:priority))
+      @instance = params[:instance]
+      @name = params[:name]
+      @priority = _evaluate_priority(params[:priority])
     end
 
     ###

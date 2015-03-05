@@ -1,3 +1,5 @@
+require 'ribbon/plugins'
+
 module Ribbon
   module EventBus
     DEFAULT_CONFIG_PATH = File.expand_path('../../../../config/defaults.yml', __FILE__).freeze
@@ -11,8 +13,13 @@ module Ribbon
     ##############################################################################
     class Instance
       include Mixins::Serializable
+      include Ribbon::Plugins::ComponentMixin
 
       serialize_with :name
+
+      plugin_loader do |plugin|
+        _translate_object_to_plugin(plugin)
+      end
 
       attr_reader :name
       attr_reader :publishers
@@ -41,6 +48,10 @@ module Ribbon
             _process_config
           end
         }
+      end
+
+      def plugin(*args)
+        config { plugin(*args) }
       end
 
       def publish(*args)
@@ -75,6 +86,23 @@ module Ribbon
       end
 
       private
+      def _translate_object_to_plugin(object)
+        case object
+        when String, Symbol
+          _translate_string_to_plugin(object.to_s)
+        end
+      end
+
+      def _translate_string_to_plugin(string)
+        begin
+          Plugins.const_get(
+            string.split('_').map(&:capitalize).join + 'Plugin'
+          )
+        rescue
+          nil # Let the Plugins gem handle this.
+        end
+      end
+
       def _registered_subscriptions_to(event_name)
         (@__registered_subscriptions ||= {})[event_name] ||= []
       end
@@ -101,10 +129,22 @@ module Ribbon
 
       def _process_config
         @publishers = _load_publishers.dup.freeze
+        _update_plugins
       end
 
       def _load_publishers
         Publishers.load_for_instance(self)
+      end
+
+      def _update_plugins
+        plugins.clear
+
+        if config.plugin?
+          config.plugin.each { |plugin|
+            plugin = [plugin] unless plugin.is_a?(Array)
+            plugins.add(*plugin)
+          }
+        end
       end
     end # Instance
   end # EventBus

@@ -18,6 +18,12 @@ module Ribbon::EventBus
       end
     end
 
+    class UndefinedValue
+      def !
+        true
+      end
+    end
+
     attr_reader :name
 
     def initialize(name=nil, &block)
@@ -60,26 +66,12 @@ module Ribbon::EventBus
       elsif /^(\w+)\?$/.match(meth_str)
         !!_get($1)
       else
-        object = _get(meth)
-        object = _set(meth, Config.new((name ? "#{name}." : '') + meth_str)) unless object
-        object
+        _get_or_create_namespace(meth)
       end
     end
 
     def nested(name)
       _nested[name.to_sym]
-    end
-
-    def nest_value(name, value)
-      nested()
-    end
-
-    def nested_values(key)
-      _nested_values[key.to_sym]
-    end
-
-    def nested_configs(namespace)
-      _nested_configs[namespace.to_sym]
     end
 
     def merge_hash!(hash)
@@ -103,6 +95,16 @@ module Ribbon::EventBus
       _nested[key.to_sym]
     end
 
+    def _get_or_create_namespace(key)
+      object = _get(key)
+
+      if object.is_a?(UndefinedValue)
+        object = _set(key, Config.new((name ? "#{name}." : '') + key.to_s))
+      end
+
+      object
+    end
+
     def _set(key, *args, &block)
       object = _args_to_object(*args, &block)
       _nested[key.to_sym] = object
@@ -111,7 +113,7 @@ module Ribbon::EventBus
     def _add(key, *args, &block)
       raise NotAddableError, self.inspect if @_value && !@_value.is_a?(Array)
       object = _args_to_object(*args, &block)
-      _set(key, object.is_a?(Proc) ? ProcArray.new : []) unless _get(key)
+      _set(key, object.is_a?(Proc) ? ProcArray.new : []) if !_get(key)
       _get(key).push(object)
     end
 
@@ -128,7 +130,7 @@ module Ribbon::EventBus
     end
 
     def _nested
-      @_nested ||= {}
+      @_nested ||= Hash.new { |hash, key| hash[key] = UndefinedValue.new }
     end
   end # Config
 end # Ribbon::EventBus

@@ -22,17 +22,20 @@ module Ribbon::EventBus
 
         def self.perform(sub_queue_format, serialized_event)
           event = Event.deserialize(serialized_event)
+          instance = event.instance
 
-          event.subscriptions.each { |s|
-            SubscriptionJob.set_queue(
-              (sub_queue_format % {
-                event: event.name,
-                priority: s.priority
-              }).to_sym
-            )
+          instance.plugins.perform(:resque_publish, event) do |event|
+            event.subscriptions.each { |s|
+              SubscriptionJob.set_queue(
+                (sub_queue_format % {
+                  event: event.name,
+                  priority: s.priority
+                }).to_sym
+              )
 
-            Resque.enqueue(SubscriptionJob, s.serialize, event.serialize)
-          }
+              Resque.enqueue(SubscriptionJob, s.serialize, event.serialize)
+            }
+          end
         end
       end
 

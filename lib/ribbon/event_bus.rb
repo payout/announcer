@@ -1,12 +1,13 @@
 module Ribbon
   module EventBus
-    autoload(:Instance, 'ribbon/event_bus/instance')
-    autoload(:Errors, 'ribbon/event_bus/errors')
-    autoload(:Config, 'ribbon/event_bus/config')
-    autoload(:Event, 'ribbon/event_bus/event')
+    autoload(:Instance,     'ribbon/event_bus/instance')
+    autoload(:Config,       'ribbon/event_bus/config')
+    autoload(:Publishers,   'ribbon/event_bus/publishers')
+    autoload(:Plugins,      'ribbon/event_bus/plugins')
+    autoload(:Event,        'ribbon/event_bus/event')
     autoload(:Subscription, 'ribbon/event_bus/subscription')
-    autoload(:Publishers, 'ribbon/event_bus/publishers')
-    autoload(:Mixins, 'ribbon/event_bus/mixins')
+    autoload(:Mixins,       'ribbon/event_bus/mixins')
+    autoload(:Errors,       'ribbon/event_bus/errors')
 
     module_function
 

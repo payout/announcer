@@ -25,11 +25,19 @@ module Ribbon::EventBus
     end
 
     def publish
-      instance.publishers.each { |p| p.publish(self) }
+      plugins.perform(:publish, self) { |event|
+        instance.publishers.each { |p| p.publish(event) }
+      }
     end
 
     def subscriptions
       instance.subscriptions_to(self)
+    end
+
+    def to_s
+      "Event(#{name}" <<
+        (params && !params.empty? && ", #{params.inspect}" or '') <<
+        ")"
     end
 
     private
