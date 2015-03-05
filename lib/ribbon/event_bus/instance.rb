@@ -18,16 +18,7 @@ module Ribbon
       serialize_with :name
 
       plugin_loader do |plugin|
-        case plugin
-        when String, Symbol
-          begin
-            Plugins.const_get(
-              plugin.to_s.split('_').map(&:capitalize).join + 'Plugin'
-            )
-          rescue
-            nil # Let the Plugins gem handle this.
-          end
-        end
+        _translate_object_to_plugin(plugin)
       end
 
       attr_reader :name
@@ -95,6 +86,23 @@ module Ribbon
       end
 
       private
+      def _translate_object_to_plugin(object)
+        case object
+        when String, Symbol
+          _translate_string_to_plugin(object.to_s)
+        end
+      end
+
+      def _translate_string_to_plugin(string)
+        begin
+          Plugins.const_get(
+            string.split('_').map(&:capitalize).join + 'Plugin'
+          )
+        rescue
+          nil # Let the Plugins gem handle this.
+        end
+      end
+
       def _registered_subscriptions_to(event_name)
         (@__registered_subscriptions ||= {})[event_name] ||= []
       end
