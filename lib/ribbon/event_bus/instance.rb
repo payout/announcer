@@ -61,9 +61,7 @@ module Ribbon
 
       def publish(*args)
         raise Errors::NoPublishersDefinedError unless publishers && !publishers.empty?
-        event = _args_to_event(*args)
-
-        plugins.perform(:publish, event) { |event| event.publish }
+        _args_to_event(*args).publish
       end
 
       def subscribe_to(event_name, params={}, &block)

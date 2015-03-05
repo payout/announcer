@@ -75,8 +75,9 @@ module Ribbon::EventBus
           end # without exception
 
           context 'with exception' do
-            let(:event) { Event.new(:test) }
-            before { allow(event).to receive(:publish).and_raise("error") }
+            # This will trigger an error in Event#publish when it tries to call
+            # ResquePublihser#publish
+            before { allow(instance.publishers.first).to receive(:publish).and_raise("error") }
 
             after { expect { instance.publish(event) }.to raise_error("error") }
 

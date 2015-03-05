@@ -25,7 +25,9 @@ module Ribbon::EventBus
     end
 
     def publish
-      instance.publishers.each { |p| p.publish(self) }
+      plugins.perform(:publish, self) { |event|
+        instance.publishers.each { |p| p.publish(event) }
+      }
     end
 
     def subscriptions
