@@ -68,14 +68,14 @@ module Ribbon::EventBus
 
           context 'without exception' do
             after { instance.publish(event) }
-            it { is_expected.to receive(:debug).with("Publishing Event(test)").once }
-            it { is_expected.to receive(:debug).with("Published Event(test)").once }
+            it { is_expected.to receive(:debug).with("Publishing: Event(test)").once }
+            it { is_expected.to receive(:debug).with("Finished Publishing: Event(test)").once }
             it { is_expected.to receive(:debug).with("Publishing on Resque: Event(test)").once }
-            it { is_expected.to receive(:debug).with("Published on Resque: Event(test)").once }
+            it { is_expected.to receive(:debug).with("Finished Publishing on Resque: Event(test)").once }
             it { is_expected.to receive(:debug)
-              .with("Executing subscription: Subscription(test, testing)").once }
+              .with("Executing Subscription: Subscription(test, testing)").once }
             it { is_expected.to receive(:debug)
-              .with("Executed subscription: Subscription(test, testing)").once }
+              .with("Finished Executing Subscription: Subscription(test, testing)").once }
           end # without exception
 
           context 'with exception' do
@@ -86,16 +86,16 @@ module Ribbon::EventBus
             after { expect { instance.publish(event) }.to raise_error("error") }
 
             context 'without log_exceptions enabled' do
-              it { is_expected.to receive(:debug).with("Publishing Event(test)").once }
-              it { is_expected.not_to receive(:debug).with("Published Event(test)") }
+              it { is_expected.to receive(:debug).with("Publishing: Event(test)").once }
+              it { is_expected.not_to receive(:debug).with("Finished Publishing: Event(test)") }
             end # without log_exceptions enabled
 
             context 'with log_exceptions enabled' do
               before { allow(logger).to receive(:fatal) }
               before { instance.config.plugins.logging.log_exceptions = true }
 
-              it { is_expected.to receive(:debug).with("Publishing Event(test)").once }
-              it { is_expected.not_to receive(:debug).with("Published Event(test)") }
+              it { is_expected.to receive(:debug).with("Publishing: Event(test)").once }
+              it { is_expected.not_to receive(:debug).with("Finished Publishing: Event(test)") }
               it { is_expected.to receive(:fatal).with(
                 'Exception raised when publishing Event(test): #<RuntimeError: error>'
                 ).once }
