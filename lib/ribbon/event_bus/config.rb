@@ -18,6 +18,12 @@ module Ribbon::EventBus
       end
     end
 
+    class UndefinedValue
+      def !
+        true
+      end
+    end
+
     attr_reader :name
 
     def initialize(name=nil, &block)
@@ -61,7 +67,11 @@ module Ribbon::EventBus
         !!_get($1)
       else
         object = _get(meth)
-        object = _set(meth, Config.new((name ? "#{name}." : '') + meth_str)) unless object
+
+        if object.is_a?(UndefinedValue)
+          object = _set(meth, Config.new((name ? "#{name}." : '') + meth_str))
+        end
+
         object
       end
     end
@@ -111,7 +121,7 @@ module Ribbon::EventBus
     def _add(key, *args, &block)
       raise NotAddableError, self.inspect if @_value && !@_value.is_a?(Array)
       object = _args_to_object(*args, &block)
-      _set(key, object.is_a?(Proc) ? ProcArray.new : []) unless _get(key)
+      _set(key, object.is_a?(Proc) ? ProcArray.new : []) if !_get(key)
       _get(key).push(object)
     end
 
@@ -128,7 +138,7 @@ module Ribbon::EventBus
     end
 
     def _nested
-      @_nested ||= {}
+      @_nested ||= Hash.new { |hash, key| hash[key] = UndefinedValue.new }
     end
   end # Config
 end # Ribbon::EventBus

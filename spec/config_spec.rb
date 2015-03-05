@@ -14,6 +14,11 @@ module Ribbon::EventBus
       expect(c.level1.level2.level3.name).to eq 'level1.level2.level3'
     end
 
+    it 'should allow setting nil values' do
+      c = Config.new { namespace.key = nil }
+      expect(c.namespace.key).to be_a NilClass
+    end
+
     it 'should support block with 0 arity' do
       c = Config.new {
         namespace.key = 'value'
