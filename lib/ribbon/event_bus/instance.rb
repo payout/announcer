@@ -59,6 +59,10 @@ module Ribbon
         }
       end
 
+      def plugin(*args)
+        config { plugin(*args) }
+      end
+
       def publish(*args)
         raise Errors::NoPublishersDefinedError unless publishers && !publishers.empty?
         _args_to_event(*args).publish
@@ -117,10 +121,22 @@ module Ribbon
 
       def _process_config
         @publishers = _load_publishers.dup.freeze
+        _update_plugins
       end
 
       def _load_publishers
         Publishers.load_for_instance(self)
+      end
+
+      def _update_plugins
+        plugins.clear
+
+        if config.plugin?
+          config.plugin.each { |plugin|
+            plugin = [plugin] unless plugin.is_a?(Array)
+            plugins.add(*plugin)
+          }
+        end
       end
     end # Instance
   end # EventBus
