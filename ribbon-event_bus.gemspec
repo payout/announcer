@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
   s.email       = ['robert@ribbonpayments.com']
   s.files       = Dir['lib/**/*.rb'] + Dir['config/**/*']
 
+  s.add_dependency 'ribbon-plugins', '~> 0.2', '>= 0.2.3'
+
   s.add_development_dependency 'rails', '~> 4.0.13'
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'redis'

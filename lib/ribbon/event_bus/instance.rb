@@ -1,3 +1,5 @@
+require 'ribbon/plugins'
+
 module Ribbon
   module EventBus
     DEFAULT_CONFIG_PATH = File.expand_path('../../../../config/defaults.yml', __FILE__).freeze
@@ -11,8 +13,22 @@ module Ribbon
     ##############################################################################
     class Instance
       include Mixins::Serializable
+      include Ribbon::Plugins::ComponentMixin
 
       serialize_with :name
+
+      plugin_loader do |plugin|
+        case plugin
+        when String, Symbol
+          begin
+            Plugins.const_get(
+              plugin.to_s.split('_').map(&:capitalize).join + 'Plugin'
+            )
+          rescue
+            nil # Let the Plugins gem handle this.
+          end
+        end
+      end
 
       attr_reader :name
       attr_reader :publishers
@@ -45,7 +61,9 @@ module Ribbon
 
       def publish(*args)
         raise Errors::NoPublishersDefinedError unless publishers && !publishers.empty?
-        _args_to_event(*args).publish
+        event = _args_to_event(*args)
+
+        plugins.perform(:publish, event) { |event| event.publish }
       end
 
       def subscribe_to(event_name, params={}, &block)

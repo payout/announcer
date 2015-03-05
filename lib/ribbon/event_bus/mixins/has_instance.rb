@@ -4,6 +4,10 @@ module Ribbon
       def instance
         (defined?(@instance) && @instance) || EventBus.instance
       end
+
+      def plugins
+        instance.send(:plugins)
+      end
     end
   end
 end
