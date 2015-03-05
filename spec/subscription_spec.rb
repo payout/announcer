@@ -48,6 +48,11 @@ module Ribbon::EventBus
         )
       end
 
+      it 'allows subscription name to be defined' do
+        expect(Subscription.new(:event, name: 'subscription name').name)
+          .to eq 'subscription name'
+      end
+
       it 'raises error for duplicate locators' do
         sub = Subscription.new(:name)
         expect { sub.instance._register_subscription(sub) }.to raise_error(
