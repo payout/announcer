@@ -183,3 +183,53 @@ end
 ```
 Be careful not to do anything too time consuming, as all publishers are executed
 synchronously when you publish an event.
+
+### Plugins
+EventBus uses the [ribbon/plugins](https://github.com/ribbon/plugins) gem and currently supports the following hooks:
+ * publish
+ * resque_publish
+ * subscription
+
+You can enable plugins via the config block:
+```ruby
+EventBus.config {
+  plugin :plugin_name, additional_args: 'go here'
+}
+```
+
+Or outside a config block via the `Instance#plugin` method:
+```ruby
+EventBus.plugin(:plugin_name, additional_args: 'go here')
+```
+
+There is currently one built-in plugin: `:logging`.
+#### Logging
+```ruby
+EventBus.config {
+  # Default options shown here.
+  plugin :logging, logger: Logger.new(STDOUT), level: :info, log_exceptions: false
+}
+```
+
+When this plugin is enabled, debug messages will be logged before and after each of the above listed hooks. If log_exceptions is enabled, then the plugin will catch, log and reraise any exceptions.
+
+#### Custom Plugins
+You can also add your own custom plugins:
+```ruby
+EventBus.config {
+  plugin {
+    before_publish do |event|
+      # Do something
+    end
+  
+    before_resque_publish do |event|
+      # Do something
+    end
+  
+    before_subscription do |subscription, event|
+      # Do something
+    end
+  }
+}
+```
+See [ribbon/plugins](https://github.com/ribbon/plugins) for more details on defining plugins.
