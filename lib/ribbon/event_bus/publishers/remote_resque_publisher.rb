@@ -21,7 +21,6 @@ module Ribbon::EventBus
         # These should be the same as the args passed to Resque.enqueue in
         # ResquePublisher#publish(event).
         args = [
-          config.subscription_queue_format.to_s,
           event.serialize
         ]
 

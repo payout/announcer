@@ -5,17 +5,6 @@ require 'mock_redis'
 module Ribbon::EventBus
   module Publishers
     RSpec.describe RemoteResquePublisher do
-      let(:instance) { EventBus.instance("remote_resque_test_#{SecureRandom.hex}") }
-      let(:event) { Event.new(:test, instance: instance) }
-
-      before(:all) { Resque.inline = true }
-      after(:all) { Resque.inline = false }
-
-      before(:each) do
-        instance.config { |c| c.publish_to :remote_resque, redis: redis }
-        instance.subscribe_to(:test) { |e| @subscription_ran = true }
-      end
-
       ###
       # Simulating Resque v1.25.2 behavior
       #
@@ -42,35 +31,89 @@ module Ribbon::EventBus
         Resque.decode(object)
       end
 
-      context 'with redis' do
+      ###
+      # Begin test code
+      ###
+      before(:all) { Resque.inline = true }
+      after(:all) { Resque.inline = false }
+
+      let(:instance) { EventBus.instance("remote_resque_test_#{SecureRandom.hex}") }
+      let(:event) { Event.new(:test, instance: instance) }
+      let(:subscription) { instance.subscribe_to(:test) {} }
+
+      before do
+        instance.config { |c| c.publish_to :remote_resque, redis: redis }
+        subscription
+      end
+
+      describe '#publish' do
+        let(:remote_resque) { instance.find_publisher(:remote_resque) }
+        subject { remote_resque.publish(event) }
+        let(:job) { subject; reserve(remote_resque.config.queue) }
+
+        context 'when redis not defined' do
+          let(:redis) { nil }
+
+          it 'should raise error' do
+            expect { subject }.to raise_error(
+              Errors::RemoteResquePublisherError, "missing redis configuration"
+            )
+          end
+        end # when redis not defined
+
+        context 'with redis' do
+          let(:redis) { MockRedis.new }
+
+          context 'non-default publisher queue' do
+            before { remote_resque.config.queue = 'testing' }
+
+            it 'should use configured queue' do
+              subject
+              expect(reserve('testing')).to be_a Resque::Job
+            end
+
+            it 'should enqueue publisher job' do
+              expect(job.payload_class).to be ResquePublisher::PublisherJob
+            end
+          end # non-default publisher queue
+
+          context 'with default publisher queue' do
+            it 'should use default queue' do
+              subject
+              expect(reserve('publisher')).to be_a Resque::Job
+            end
+
+            it 'should enqueue publisher job' do
+              expect(job.payload_class).to be ResquePublisher::PublisherJob
+            end
+          end # with default publisher queue
+        end # with redis
+      end # #publish
+
+      describe 'Job#perform' do
         let(:redis) { MockRedis.new }
+        let(:remote_resque) { instance.find_publisher(:remote_resque) }
+        let(:job) { remote_resque.publish(event); reserve(remote_resque.config.queue) }
+        subject { job.perform }
 
-        it 'should enqueue publisher job' do
-          instance.publish(event)
-          job = reserve('publisher')
+        context 'without destination ResquePublisher' do
+          it 'should raise exception' do
+            expect { subject }.to raise_error(
+              Errors::PublisherError, 'No ResquePublisher found'
+            )
+          end
+        end # without destination ResquePublisher
 
-          expect(@subscription_ran).to be nil
+        context 'with destination ResquePublisher' do
+          before { instance.config { publish_to :resque } }
+          it { is_expected.to be true }
 
-          expect(job.payload_class).to be ResquePublisher::PublisherJob
-          expect(job.perform).to be true
-          expect(@subscription_ran).to be true
-        end
-
-        it 'should use configured queue' do
-          instance.config.publishers.remote_resque.queue = 'testing'
-          instance.publish(event)
-          expect(reserve('testing')).to be_a Resque::Job
-        end
-      end
-
-      context 'when redis not defined' do
-        let(:redis) { nil }
-        it 'should raise error' do
-          expect { instance.publish(event) }.to raise_error(
-            Errors::RemoteResquePublisherError, "missing redis configuration"
-          )
-        end
-      end
+          it 'should execute subscription' do
+            expect(subscription).to receive(:handle).once
+            subject
+          end
+        end # with destination ResquePublisher
+      end # Job#perform
     end
   end
 end

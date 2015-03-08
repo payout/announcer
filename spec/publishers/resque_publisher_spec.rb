@@ -66,12 +66,16 @@ module Ribbon::EventBus
         end
 
         it 'should support setting per publisher queues' do
-          instance.config { |c|
-            c.publish_to :resque, subscription_queue_format: 'custom_%{priority}'
+          # Need to clear previous ResquePublisher from publishers:
+          instance.config { |c| c.publish_to = nil }
+
+          # Add new ResquePublisher
+          instance.config {
+            publish_to :resque, subscription_queue_format: 'custom_%{priority}'
           }
 
           instance.publish(event)
-          expect(queues).to eq [:subscriptions_p1, :custom_1]
+          expect(queues).to eq [:custom_1]
         end
       end
 

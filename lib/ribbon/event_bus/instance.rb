@@ -72,6 +72,15 @@ module Ribbon
         _subscriptions_by_locators[locator]
       end
 
+      def find_publisher(publisher)
+        klass = Publishers.load(publisher)
+        publishers && publishers.find { |pub| pub.is_a?(klass) }
+      end
+
+      def has_publisher?(publisher)
+        !!find_publisher(publisher)
+      end
+
       def _register_subscription(subscription)
         if _subscriptions_by_locators[subscription.locator]
           # This is not expected to occur
