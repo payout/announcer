@@ -1,5 +1,6 @@
 subscriptions:
   default_priority: medium
+  max_priority: 5
 
 publishers:
   resque:

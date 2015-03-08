@@ -75,6 +75,7 @@ module Ribbon::EventBus
 
     context '#subscribe_to' do
       it 'should order subscriptions based on priority' do
+        subject.config.subscriptions.max_priority = 9
         subject.subscribe_to(:test_event, priority: 7) { |e| 7 }
         subject.subscribe_to(:test_event, priority: 1) { |e| 1 }
         subject.subscribe_to(:test_event, priority: 3) { |e| 3 }
