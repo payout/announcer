@@ -1,10 +1,11 @@
 subscriptions:
   default_priority: medium
+  max_priority: 5
 
 publishers:
   resque:
     publisher_queue: publisher
-    subscription_queue_format: 'subscriptions_p%{priority}'
+    subscription_queue_formatter: null
 
   remote_resque:
     queue: publisher

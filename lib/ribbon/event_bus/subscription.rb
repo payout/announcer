@@ -14,14 +14,6 @@ module Ribbon::EventBus
     attr_reader :priority
     attr_reader :locator
 
-    PRIORITY_SYMBOL_TO_INTEGER_MAP = {
-      highest: 1,
-      high: 3,
-      medium: 5,
-      low: 7,
-      lowest: 10
-    }.freeze
-
     def initialize(event_name, params={}, &block)
       @event_name = event_name.to_sym
       @_block = block
@@ -73,6 +65,19 @@ module Ribbon::EventBus
       Digest::MD5.hexdigest(_path).to_sym
     end
 
+    def _symbol_to_priority(sym)
+      (@__symbol_to_priority_map ||= _generate_priority_shortcut_map)[sym]
+    end
+
+    def _generate_priority_shortcut_map(max_priority=config.max_priority)
+      {}.tap { |map|
+        map.merge!(highest: 1, lowest: max_priority)
+        map[:medium] = (map[:lowest] / 2.0).ceil
+        map[:high] = (map[:medium] / 2.0).ceil
+        map[:low] = ((map[:lowest] + map[:medium]) / 2.0).ceil
+      }.freeze
+    end
+
     ############################################################################
     # Parameter Evaluation Logic
     #
@@ -106,13 +111,13 @@ module Ribbon::EventBus
 
     # Evaluate an integer as a priority.
     def _evaluate_priority_int(int)
-      raise Errors::InvalidPriorityError, int unless int > 0 && int <= 10
+      raise Errors::InvalidPriorityError, int unless int > 0 && int <= config.max_priority
       int
     end
 
     # Evaluate a symbol as a priority.
     def _evaluate_priority_symbol(sym)
-      if (priority = PRIORITY_SYMBOL_TO_INTEGER_MAP[sym])
+      if (priority = _symbol_to_priority(sym))
         _evaluate_priority(priority)
       else
         raise Errors::InvalidPriorityError, sym.inspect

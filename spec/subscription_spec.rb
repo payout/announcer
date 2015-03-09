@@ -15,15 +15,11 @@ module Ribbon::EventBus
       end
 
       it 'supports symbol priorities' do
-        expect(Subscription.new(:name, priority: :medium).priority).to eq(
-          Subscription::PRIORITY_SYMBOL_TO_INTEGER_MAP[:medium]
-        )
+        expect(Subscription.new(:name, priority: :medium).priority).to eq 3
       end
 
       it 'supports string priorities' do
-        expect(Subscription.new(:name, priority: 'highest').priority).to eq(
-          Subscription::PRIORITY_SYMBOL_TO_INTEGER_MAP[:highest]
-        )
+        expect(Subscription.new(:name, priority: 'highest').priority).to eq 1
       end
 
       it 'raises error for invalid priorities' do

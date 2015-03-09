@@ -75,6 +75,7 @@ module Ribbon::EventBus
 
     context '#subscribe_to' do
       it 'should order subscriptions based on priority' do
+        subject.config.subscriptions.max_priority = 9
         subject.subscribe_to(:test_event, priority: 7) { |e| 7 }
         subject.subscribe_to(:test_event, priority: 1) { |e| 1 }
         subject.subscribe_to(:test_event, priority: 3) { |e| 3 }
@@ -87,6 +88,10 @@ module Ribbon::EventBus
 
         expect(subject.subscriptions_to(:test_event).map { |s| s.handle(event) })
           .to eq([1, 2, 2, 3, 7, 8, 9])
+      end
+
+      it 'should return subscription' do
+        expect(subject.subscribe_to(:test_event)).to be_a Subscription
       end
     end
 
