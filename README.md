@@ -43,7 +43,7 @@ EventBus.config do
   publish_to :resque
 end
 ```
-This is all that is needed if Resque is already configured in your app. This will expect Resque to listen to the following queues: `publisher`, `subscriptions_p1`, `subscriptions_p2`, `subscriptions_p3`, ..., `subscriptions_p10`. Here the `p#` refers to the subscription priority. You must configure Resque to evaluate these queues in the expected order.
+This is all that is needed if Resque is already configured in your app. This will expect Resque to listen to the following queues: `publisher`, `subscriptions_p1`, `subscriptions_p2`, ..., `subscriptions_p5`. Here the `p#` refers to the subscription priority. You must configure Resque to evaluate these queues in the expected order.
 
 ### Subscriptions
 
