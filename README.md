@@ -63,23 +63,35 @@ end
 ```
 
 #### Priorities
-Each subscription has a priority, which affects the order in which it
-is published to. By default, subscriptions have a priority of `5`.
-When using the ResquePublisher, this also effects which Resque
-queue they are placed in. This allows you to configure Resque to run some
-subscriptions with higher priority.
-
-There are 10 available priorities (1 through 10).
+Each subscription has a priority assigned to it. By default, there are 5 priorities (1 through 5), 1 being the highest.
+This affects the order in which subscriptions are published to. When using the ResquePublisher, this also affects which Resque queue they are placed in, allowing you to configure Resque to run some subscriptions with higher priority.
 
 The following human readable shortcuts are also available:
 
 shortcut | priority
 ---------|---------
 highest  | 1
-high     | 3
-medium   | 5
-low      | 7
-lowest   | 10
+high     | 2
+medium   | 3
+low      | 4
+lowest   | 5
+
+By default, all subscriptions are given the `medium` priority, which is `3` in the default case.
+
+If you'd like more, or less, priorities, you can set the `subscriptions.max_priority` config value. If you do so, the human readable shortcuts will dynamically conform to the new range, so they're safe to use.
+
+```ruby
+EventBus.config {
+  subscriptions.max_priority = 3
+}
+```
+new shortcut | priority
+---|---
+highest | 1
+high    | 1
+medium  | 2
+low     | 3
+lowest  | 3
 
 
 ### Events
@@ -170,7 +182,7 @@ publishers.remote_resque.**redis** | `nil` | Can be a Redis or Redis::Namespace 
 publishers.remote_resque.**redis_url** | `nil` | A redis url (e.g., `redis://server:1234`)
 publishers.remote_resque.**redis_namespace** | `resque` | The namespace to use.
 publishers.remote_resque.**queue** | `'publisher'` | The queue on the redis server to submit the publisher job to.
-publishers.remote_resque.**subscription_queue_format** | `'subscriptions_p%{priority}'` |
+publishers.remote_resque.**subscription_queue_formatter** | `lambda {|s| "subscriptions_p#{s.priority}"}` | A block taking a subscription as an argument and returning the queue to place it in. For example: `lambda {|s| [:high, :medium, :low][s.priority-1]}`
 
 #### Custom Blocks
 You can also specify custom blocks as publishers:
