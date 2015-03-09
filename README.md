@@ -43,6 +43,7 @@ EventBus.config do
   publish_to :resque
 end
 ```
+
 This is all that is needed if Resque is already configured in your app. This will expect Resque to listen to the following queues: `publisher`, `subscriptions_p1`, `subscriptions_p2`, ..., `subscriptions_p5`. Here the `p#` refers to the subscription priority. You must configure Resque to evaluate these queues in the expected order.
 
 ### Subscriptions
@@ -50,6 +51,7 @@ This is all that is needed if Resque is already configured in your app. This wil
 Define subscriptions in initializers.
 
 For example:
+
 ```Ruby
 # config/initializers/event_bus/image_processing_subcriptions.rb
 
@@ -85,6 +87,7 @@ EventBus.config {
   subscriptions.max_priority = 3
 }
 ```
+
 new shortcut | priority
 ---|---
 highest | 1
@@ -111,6 +114,7 @@ It's possible to have multiple EventBus instances, although this is not necessar
 most use-cases.
 
 For example:
+
 ```ruby
 # Note: instance names must be globally unique!
 synchronous_bus = EventBus.instance("a synchronous event bus")
@@ -137,6 +141,7 @@ block. Values defined here will apply to all instances of the respective publish
 
 You can also specify per publisher configuration values when calling `publish_to`
 in the config block. For example:
+
 ```ruby
 EventBus.config do
   publish_to :resque, publisher_queue: 'another_queue'
@@ -185,6 +190,7 @@ publishers.remote_resque.**queue** | `'publisher'` | The queue on the redis serv
 
 #### Custom Blocks
 You can also specify custom blocks as publishers:
+
 ```ruby
 EventBus.config do
   publish_to do |event|
@@ -192,6 +198,7 @@ EventBus.config do
   end
 end
 ```
+
 Be careful not to do anything too time consuming, as all publishers are executed
 synchronously when you publish an event.
 
@@ -202,6 +209,7 @@ EventBus uses the [ribbon/plugins](https://github.com/ribbon/plugins) gem and cu
  * subscription
 
 You can enable plugins via the config block:
+
 ```ruby
 EventBus.config {
   plugin :plugin_name, additional_args: 'go here'
@@ -209,12 +217,14 @@ EventBus.config {
 ```
 
 Or outside a config block via the `Instance#plugin` method:
+
 ```ruby
 EventBus.plugin(:plugin_name, additional_args: 'go here')
 ```
 
 There is currently one built-in plugin: `:logging`.
 #### Logging
+
 ```ruby
 EventBus.config {
   # Default options shown here.
@@ -226,6 +236,7 @@ When this plugin is enabled, debug messages will be logged before and after each
 
 #### Custom Plugins
 You can also add your own custom plugins:
+
 ```ruby
 EventBus.config {
   plugin {
@@ -243,4 +254,5 @@ EventBus.config {
   }
 }
 ```
+
 See [ribbon/plugins](https://github.com/ribbon/plugins) for more details on defining plugins.
