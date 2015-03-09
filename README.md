@@ -168,7 +168,7 @@ Publishes to the subscriptions on two phases:
 Key | Default | Description
 ----|---------|------------
 publishers.resque.**publisher_queue** | `'publisher'` | Configure the Resque queue used for publishing events.
-publishers.resque.**subscription_queue_format** | `'subscriptions_p%{priority}'` | Configure the queue used for subscriptions. Other than 'priority', you may also reference the event name with 'event'.
+publishers.resque.**subscription_queue_formatter** | `lambda {|s| "subscriptions_p#{s.priority}"}` | A block taking a subscription as an argument and returning the queue to place it in. For example: `lambda {|s| [:high, :medium, :low][s.priority-1]}`
 
 #### remote_resque
 Publishes events to a Resque queue on a separate Redis server. This allows you to
@@ -182,7 +182,6 @@ publishers.remote_resque.**redis** | `nil` | Can be a Redis or Redis::Namespace 
 publishers.remote_resque.**redis_url** | `nil` | A redis url (e.g., `redis://server:1234`)
 publishers.remote_resque.**redis_namespace** | `resque` | The namespace to use.
 publishers.remote_resque.**queue** | `'publisher'` | The queue on the redis server to submit the publisher job to.
-publishers.remote_resque.**subscription_queue_formatter** | `lambda {|s| "subscriptions_p#{s.priority}"}` | A block taking a subscription as an argument and returning the queue to place it in. For example: `lambda {|s| [:high, :medium, :low][s.priority-1]}`
 
 #### Custom Blocks
 You can also specify custom blocks as publishers:
