@@ -13,11 +13,14 @@ module Ribbon::EventBus
 
       let(:instance) { EventBus.instance("resque_test_#{SecureRandom.hex}") }
       let(:event) { Event.new(:test, instance: instance) }
+      let(:subscription) { instance.subscribe_to(:test, priority: 1) { |e| @subscriptions_run = true } }
 
       before(:each) do
         instance.config { |c| c.publish_to :resque }
-        instance.subscribe_to(:test, priority: 1) { |e| @subscriptions_run = true }
+        subscription
       end
+
+      let(:publisher) { instance.find_publisher(:resque) }
 
       it 'should run subscriptions' do
         expect(@subscriptions_run).to be nil
@@ -60,7 +63,7 @@ module Ribbon::EventBus
         end
 
         it 'should support changing format' do
-          instance.config.publishers.resque.subscription_queue_format = 'test_%{priority}_%{event}'
+          instance.config.publishers.resque.subscription_queue_formatter {|s| "test_#{s.priority}_test"}
           instance.publish(event)
           expect(queue).to eq :test_1_test
         end
@@ -71,7 +74,7 @@ module Ribbon::EventBus
 
           # Add new ResquePublisher
           instance.config {
-            publish_to :resque, subscription_queue_format: 'custom_%{priority}'
+            publish_to :resque, subscription_queue_formatter: lambda {|s| "custom_#{s.priority}"}
           }
 
           instance.publish(event)
@@ -91,6 +94,37 @@ module Ribbon::EventBus
           Errors::PublisherError, "Event for different instance"
         )
       end
+
+      describe '#subscription_queue_formatter' do
+        before { publisher.config.subscription_queue_formatter = formatter }
+        subject { publisher.subscription_queue_formatter.call(subscription) }
+
+        context 'with undefined config value' do
+          let(:formatter) { nil }
+          it { is_expected.to eq "subscriptions_p#{subscription.priority}" }
+        end # with default config
+
+        context 'with lambda config value' do
+          let(:formatter) { lambda {|s| "lambda_#{s.priority}"} }
+          it { is_expected.to eq "lambda_#{subscription.priority}" }
+        end # with lambda config value
+
+        context 'when using config proc add syntax' do
+          let(:formatter) { nil }
+          before { publisher.config.subscription_queue_formatter {|s| s.priority.to_s } }
+          it { is_expected.to eq subscription.priority.to_s }
+
+          context 'with multiple procs added' do
+            before { 3.times { |i| publisher.config.subscription_queue_formatter {|s| i + 1} } }
+            it { is_expected.to eq 3 }
+          end # with multiple procs added
+        end # when using config proc add syntax
+
+        context 'when using unexpected value' do
+          let(:formatter) { Class.new }
+          it { expect { subject }.to raise_error(Errors::PublisherError, /^Invalid subscription_queue_formatter/) }
+        end
+      end # #subscription_queue_formatter
     end
   end
 end
