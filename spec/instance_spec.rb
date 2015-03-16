@@ -14,7 +14,8 @@ module Ribbon::EventBus
       expect(Instance.new(name).name).to eq name.to_sym
     end
 
-    subject { Instance.new }
+    let(:instance) { Instance.new }
+    subject { instance }
 
     context '#config' do
       it 'should raise error for invalid publisher name' do
@@ -76,13 +77,13 @@ module Ribbon::EventBus
     context '#subscribe_to' do
       it 'should order subscriptions based on priority' do
         subject.config.subscriptions.max_priority = 9
-        subject.subscribe_to(:test_event, priority: 7) { |e| 7 }
-        subject.subscribe_to(:test_event, priority: 1) { |e| 1 }
-        subject.subscribe_to(:test_event, priority: 3) { |e| 3 }
-        subject.subscribe_to(:test_event, priority: 2) { |e| 2 }
-        subject.subscribe_to(:test_event, priority: 2) { |e| 2 }
-        subject.subscribe_to(:test_event, priority: 9) { |e| 9 }
-        subject.subscribe_to(:test_event, priority: 8) { |e| 8 }
+        subject.subscribe_to(:test_event, name: 1, priority: 7) { |e| 7 }
+        subject.subscribe_to(:test_event, name: 2, priority: 1) { |e| 1 }
+        subject.subscribe_to(:test_event, name: 3, priority: 3) { |e| 3 }
+        subject.subscribe_to(:test_event, name: 4, priority: 2) { |e| 2 }
+        subject.subscribe_to(:test_event, name: 5, priority: 2) { |e| 2 }
+        subject.subscribe_to(:test_event, name: 6, priority: 9) { |e| 9 }
+        subject.subscribe_to(:test_event, name: 7, priority: 8) { |e| 8 }
 
         event = Event.new(:test_event, instance: subject)
 
@@ -105,8 +106,8 @@ module Ribbon::EventBus
 
       before(:each) do
         subject.subscribe_to(:one) { |e| }
-        subject.subscribe_to(:two) { |e| }
-        subject.subscribe_to(:two) { |e| }
+        subject.subscribe_to(:two, name: 'first') { |e| }
+        subject.subscribe_to(:two, name: 'second') { |e| }
       end
 
       it 'should be the same object' do
@@ -127,6 +128,16 @@ module Ribbon::EventBus
       it 'should raise error when deserializing unnamed instance' do
         expect { Instance.deserialize(Instance.new.serialize) }.to raise_error(
           Errors::InstanceError, "Can't deserialize an unnamed Instance"
+        )
+      end
+    end
+
+    context '#_register_subscription' do
+      let(:subscription) { instance.subscribe_to(:event) }
+
+      it 'raises error on duplicate subscription identifier' do
+        expect { instance._register_subscription(subscription) }.to raise_error(
+          Errors::SubscriptionError, /^duplicate identifier:/
         )
       end
     end
