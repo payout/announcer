@@ -25,6 +25,7 @@ module Ribbon::EventBus
     class SubscriptionError < Error; end
     class InvalidPriorityError < SubscriptionError; end
     class UnexpectedEventError < SubscriptionError; end
+    class DuplicateIdentifierError < SubscriptionError; end
 
     ###
     # Publisher Errors

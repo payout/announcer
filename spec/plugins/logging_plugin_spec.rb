@@ -73,9 +73,9 @@ module Ribbon::EventBus
             it { is_expected.to receive(:debug).with("Publishing on Resque: Event(test)").once }
             it { is_expected.to receive(:debug).with("Finished Publishing on Resque: Event(test)").once }
             it { is_expected.to receive(:debug)
-              .with("Executing Subscription: Subscription(test, testing)").once }
+              .with("Executing Subscription: Subscription(on test: testing)").once }
             it { is_expected.to receive(:debug)
-              .with("Finished Executing Subscription: Subscription(test, testing)").once }
+              .with("Finished Executing Subscription: Subscription(on test: testing)").once }
           end # without exception
 
           context 'with exception' do

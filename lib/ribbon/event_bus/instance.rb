@@ -68,8 +68,8 @@ module Ribbon
         _registered_subscriptions_to(event_name).dup
       end
 
-      def find_subscription(locator)
-        _subscriptions_by_locators[locator]
+      def find_subscription(identifier)
+        _subscriptions_by_identifiers[identifier]
       end
 
       def find_publisher(publisher)
@@ -82,11 +82,11 @@ module Ribbon
       end
 
       def _register_subscription(subscription)
-        if _subscriptions_by_locators[subscription.locator]
+        if _subscriptions_by_identifiers[subscription.identifier]
           # This is not expected to occur
-          raise Errors::SubscriptionError, "duplicate locator: #{subscription.locator.inspect}"
+          raise Errors::SubscriptionError, "duplicate identifier: #{subscription.identifier.inspect}"
         else
-          _subscriptions_by_locators[subscription.locator] = subscription
+          _subscriptions_by_identifiers[subscription.identifier] = subscription
        end
 
         _registered_subscriptions_to(subscription.event_name)
@@ -116,8 +116,8 @@ module Ribbon
         (@__registered_subscriptions ||= {})[event_name] ||= []
       end
 
-      def _subscriptions_by_locators
-        @__registered_subscriptions_by_locator ||= {}
+      def _subscriptions_by_identifiers
+        @__registered_subscriptions_by_identifier ||= {}
       end
 
       def _load_default_config

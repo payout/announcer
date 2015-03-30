@@ -7,12 +7,12 @@ module Ribbon::EventBus
     include Mixins::Serializable
 
     config_key :subscriptions
-    serialize_with :instance, :locator
+    serialize_with :instance, :identifier
 
     attr_reader :name
     attr_reader :event_name
     attr_reader :priority
-    attr_reader :locator
+    attr_reader :identifier
 
     def initialize(event_name, params={}, &block)
       @event_name = event_name.to_sym
@@ -20,14 +20,17 @@ module Ribbon::EventBus
 
       _evaluate_params(params)
 
-      @name ||= _path
-      @locator = _generate_locator
+      @identifier = _generate_identifier
 
-      instance._register_subscription(self)
+      if instance.find_subscription(identifier)
+        raise Errors::DuplicateIdentifierError, "give this subscription a unique name"
+      else
+        instance._register_subscription(self)
+      end
     end
 
-    def self.load_from_serialized(instance, locator)
-      instance.find_subscription(locator)
+    def self.load_from_serialized(instance, identifier)
+      instance.find_subscription(identifier)
     end
 
     def handle(event)
@@ -40,7 +43,7 @@ module Ribbon::EventBus
     end
 
     def to_s
-      "Subscription(#{event_name}, #{name})"
+      "Subscription(on #{event_name}: #{name || _path})"
     end
 
     private
@@ -49,8 +52,15 @@ module Ribbon::EventBus
       @__path ||= _determine_path
     end
 
+    ##
+    # Determines the file path of the ruby code defining the subscription.
+    # It's important that this is called from within the initializer to get the
+    # desired effect.
     def _determine_path
       path = File.expand_path('../..', __FILE__)
+
+      # Will be something like:
+      # "/path/to/file.rb:47:in `method_name'"
       non_event_bus_caller = caller.find { |c| !c.start_with?(path) }
 
       unless non_event_bus_caller
@@ -61,8 +71,22 @@ module Ribbon::EventBus
       non_event_bus_caller
     end
 
-    def _generate_locator
-      Digest::MD5.hexdigest(_path).to_sym
+    ##
+    # Generates a unique identifier for this subscription which will be used to
+    # "serialize" it.
+    #
+    # The goal here is to generate a identifier that is the same across different
+    # processes and servers and that ideally changes infrequently between
+    # application versions, but when it does change, it should do so predictably.
+    def _generate_identifier
+      # Cut off everything from the line number onward. That way, the identifier
+      # does not change when the subscription block moves to a different line.
+      index = _path.rindex(/:\d+:/) - 1
+      path = _path[0..index]
+
+      raise Errors::SubscriptionError, "Invalid path: #{path}" unless File.exists?(path)
+
+      Digest::MD5.hexdigest("#{path}:#{event_name}:#{name}").to_sym
     end
 
     def _symbol_to_priority(sym)
@@ -89,7 +113,7 @@ module Ribbon::EventBus
     ###
     def _evaluate_params(params)
       @instance = params[:instance]
-      @name = params[:name]
+      @name = params[:name].to_s
       @priority = _evaluate_priority(params[:priority])
     end
 
