@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     ribbon-event_bus (0.4.0)
+      celluloid (>= 0.17.2)
       ribbon-plugins (~> 0.2, >= 0.2.4)
 
 GEM
@@ -33,12 +34,30 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.2)
     builder (3.1.4)
+    celluloid (0.17.2)
+      celluloid-essentials
+      celluloid-extras
+      celluloid-fsm
+      celluloid-pool
+      celluloid-supervision
+      timers (>= 4.1.1)
+    celluloid-essentials (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-extras (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-fsm (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-pool (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-supervision (0.20.5)
+      timers (>= 4.1.1)
     codeclimate-test-reporter (0.4.7)
       simplecov (>= 0.7.1, < 1.0.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
     erubis (2.7.0)
     hike (1.2.3)
+    hitimes (1.2.3)
     i18n (0.7.0)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
@@ -119,6 +138,8 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.4)
     tilt (1.4.1)
+    timers (4.1.1)
+      hitimes
     tzinfo (0.3.43)
     vegas (0.1.11)
       rack (>= 1.0.0)

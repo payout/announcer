@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.files       = Dir['lib/**/*.rb'] + Dir['config/**/*']
 
   s.add_dependency 'ribbon-plugins', '~> 0.2', '>= 0.2.4'
+  s.add_dependency 'celluloid', '>= 0.17.2'
 
   s.add_development_dependency 'rails', '~> 4.0.13'
   s.add_development_dependency "sqlite3"
