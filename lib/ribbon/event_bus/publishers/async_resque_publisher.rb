@@ -12,7 +12,6 @@ module Ribbon::EventBus
       def initialize(instance=nil, params={})
         super
         @resque = config.resque? ? config.resque : Resque
-        PublisherWorker.supervise(args: [self], as: worker_id)
       end
 
       def worker_id
@@ -30,7 +29,11 @@ module Ribbon::EventBus
       # However, if a dead worker is returned, then async calls will silently
       # fail, allowing normal execution. This makes firing events best-effort.
       def worker
-        w = Celluloid::Actor[worker_id]
+        # Retrieve the PublisherWorker or start the supervisor.
+        w = Celluloid::Actor[worker_id] || PublisherWorker.supervise(
+          args: [self],
+          as: worker_id
+        ).send(worker_id)
 
         3.times {
           if w.dead?

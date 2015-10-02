@@ -12,6 +12,12 @@ module Ribbon::EventBus
         Resque.inline = false
       end
 
+      around { |ex|
+        Celluloid.shutdown
+        Celluloid.boot
+        ex.run
+      }
+
       let(:instance) { EventBus.instance("resque_test_#{SecureRandom.hex}") }
       let(:event) { Event.new(:test, instance: instance) }
       let(:subscription) { instance.subscribe_to(:test, priority: 1) { |e| @subscriptions_run = true } }

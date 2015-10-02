@@ -181,6 +181,21 @@ Same as the above `resque` publisher, but enqueues to the publisher queue asynch
 ##### Config
 Uses the same configuration as the `resque` publisher.
 
+##### Unicorn Note
+If your using unicorn, or forking in general, you need to restart [Celluloid](https://github.com/celluloid/celluloid) after forking. Celluloid is how EventBus handles publishing
+events asynchronously.
+
+For unicorn, in your config (e.g., `unicorn.rb`) you need to specify the following in your `after_fork` callback:
+
+```ruby
+if defined?(Celluloid)
+  Celluloid.shutdown
+  Celluloid.boot
+end
+```
+
+This will ensure that events will continue to be published asynchronously in your web processes.
+
 #### remote_resque
 Publishes events to a Resque queue on a separate Redis server. This allows you to
 publish events from one service to another.
