@@ -175,6 +175,12 @@ Key | Default | Description
 publishers.resque.**publisher_queue** | `'publisher'` | Configure the Resque queue used for publishing events.
 publishers.resque.**subscription_queue_formatter** | `lambda {|s| "subscriptions_p#{s.priority}"}` | A block taking a subscription as an argument and returning the queue to place it in. For example: `lambda {|s| [:high, :medium, :low][s.priority-1]}`
 
+#### async_resque
+Same as the above `resque` publisher, but enqueues to the publisher queue asynchronously (in a thread). This can be useful if you want to protect your app from temporary Redis failures, and you can accept a best-effort approach to publishing events. If publishing the event fails, no exception will be raised and your code will continue as before.
+
+##### Config
+Uses the same configuration as the `resque` publisher.
+
 #### remote_resque
 Publishes events to a Resque queue on a separate Redis server. This allows you to
 publish events from one service to another.
@@ -243,11 +249,11 @@ EventBus.config {
     before_publish do |event|
       # Do something
     end
-  
+
     before_resque_publish do |event|
       # Do something
     end
-  
+
     before_subscription do |subscription, event|
       # Do something
     end

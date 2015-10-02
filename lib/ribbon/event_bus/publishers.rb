@@ -10,6 +10,8 @@ module Ribbon::EventBus
       'ribbon/event_bus/publishers/resque_publisher')
     autoload(:RemoteResquePublisher,
       'ribbon/event_bus/publishers/remote_resque_publisher')
+    autoload(:AsyncResquePublisher,
+      'ribbon/event_bus/publishers/async_resque_publisher')
 
     module_function
     def load_for_instance(instance)

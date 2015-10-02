@@ -20,31 +20,37 @@ module Ribbon::EventBus
       end
 
       def subscription_queue_formatter
-        if config.subscription_queue_formatter?
-          formatter = config.subscription_queue_formatter
-          case formatter
-          when Array
-            formatter.last
-          when Proc
-            formatter
-          else
-            raise Errors::PublisherError, "Invalid subscription_queue_formatter: #{formatter.inspect}"
-          end
-        else
-          lambda { |subscription| "subscriptions_p#{subscription.priority}" }
-        end
+        self.class.subscription_queue_formatter(config)
       end
+
+      class << self
+        def subscription_queue_formatter(config)
+          if config.subscription_queue_formatter?
+            formatter = config.subscription_queue_formatter
+            case formatter
+            when Array
+              formatter.last
+            when Proc
+              formatter
+            else
+              raise Errors::PublisherError, "Invalid subscription_queue_formatter: #{formatter.inspect}"
+            end
+          else
+            lambda { |subscription| "subscriptions_p#{subscription.priority}" }
+          end
+        end
+      end # Class Methods
 
       module PublisherJob
         def self.set_queue(queue)
           @queue = queue
         end
 
-        def self.perform(serialized_event)
+        def self.perform(serialized_event, publisher_name=:resque)
           event = Event.deserialize(serialized_event)
           instance = event.instance
 
-          publisher = instance.find_publisher(:resque)
+          publisher = instance.find_publisher(publisher_name)
           raise Errors::PublisherError, 'No ResquePublisher found' unless publisher
           queue_formatter = publisher.subscription_queue_formatter
 
