@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ribbon-event_bus (0.4.0)
+    ribbon-event_bus (0.5.0)
       celluloid (>= 0.17.2)
       ribbon-plugins (~> 0.2, >= 0.2.4)
 
