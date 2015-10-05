@@ -1,4 +1,4 @@
-[![Code Climate](https://codeclimate.com/github/payout/announcer/badges/gpa.svg)](https://codeclimate.com/github/payout/announcer) [![Test Coverage](https://codeclimate.com/github/payout/announcer/badges/coverage.svg)](https://codeclimate.com/github/payout/announcer) [![Build Status](https://semaphoreapp.com/api/v1/projects/bb850102-b137-432b-9cbe-e1824ef4013f/365383/shields_badge.svg)](https://semaphoreapp.com/payout/announcer) [![Inch CI](http://inch-ci.org/github/payout/announcer.png)](http://inch-ci.org/github/payout/announcer)
+[![Code Climate](https://codeclimate.com/github/payout/announcer/badges/gpa.svg)](https://codeclimate.com/github/payout/announcer) [![Test Coverage](https://codeclimate.com/github/payout/announcer/badges/coverage.svg)](https://codeclimate.com/github/payout/announcer/coverage) [![Build Status](https://semaphoreci.com/api/v1/projects/bb850102-b137-432b-9cbe-e1824ef4013f/373690/shields_badge.svg)](https://semaphoreci.com/payout/announcer) [![Inch CI](http://inch-ci.org/github/payout/announcer.png)](http://inch-ci.org/github/payout/announcer)
 
 # Announcer
 
