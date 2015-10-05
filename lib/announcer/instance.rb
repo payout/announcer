@@ -1,4 +1,4 @@
-require 'ribbon/plugins'
+require 'plugins'
 
 module Announcer
   DEFAULT_CONFIG_PATH = File.expand_path('../../../config/defaults.yml', __FILE__).freeze
@@ -12,7 +12,7 @@ module Announcer
   ##############################################################################
   class Instance
     include Mixins::Serializable
-    include Ribbon::Plugins::ComponentMixin
+    include ::Plugins::ComponentMixin
 
     serialize_with :name
 

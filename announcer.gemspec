@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.email       = ['robert@payout.com']
   s.files       = Dir['lib/**/*.rb'] + Dir['config/**/*']
 
-  s.add_dependency 'ribbon-plugins', '~> 0.2', '>= 0.2.4'
+  s.add_dependency 'plugins', '~> 0.3.0', '>= 0.3.0'
   s.add_dependency 'celluloid', '>= 0.17.2'
 
   s.add_development_dependency 'rails', '~> 4.0.13'
