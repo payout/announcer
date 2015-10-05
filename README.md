@@ -2,7 +2,7 @@
 
 # Announcer
 
-A simple but flexible event bus for Ruby. With the recommended settings, it
+A simple and flexible event bus for Ruby. With the recommended settings, it
 processes event subscriptions on Resque asynchronously. Each event subscription
 is also processed as a separate Resque job. This allows subscriptions to be
 executed with different priorities (i.e., in different queues).
