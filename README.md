@@ -129,7 +129,7 @@ published on one instance won't be sent to subscriptions on other instances!
 
 ### Publishers
 
-There are currently 4 supported publishers. One of which allows you to define an
+There are currently 5 supported publishers. One of which allows you to define an
 arbitrary block to execute. Note that a publisher doesn't have to submit the event to
 the subscriptions. It can, for example, simply output the event to a log.
 
