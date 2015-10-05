@@ -2,7 +2,7 @@ require 'securerandom'
 require 'resque'
 require 'mock_redis'
 
-module Ribbon::EventBus
+module Announcer
   module Publishers
     RSpec.describe RemoteResquePublisher do
       ###
@@ -37,7 +37,7 @@ module Ribbon::EventBus
       before(:all) { Resque.inline = true }
       after(:all) { Resque.inline = false }
 
-      let(:instance) { EventBus.instance("remote_resque_test_#{SecureRandom.hex}") }
+      let(:instance) { Announcer.instance("remote_resque_test_#{SecureRandom.hex}") }
       let(:event) { Event.new(:test, instance: instance) }
       let(:subscription) { instance.subscribe_to(:test) {} }
 

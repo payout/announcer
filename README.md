@@ -1,6 +1,6 @@
-[![Gem Version](https://badge.fury.io/rb/ribbon-event_bus.svg)](http://badge.fury.io/rb/ribbon-event_bus) [![Code Climate](https://codeclimate.com/github/ribbon/event_bus/badges/gpa.svg)](https://codeclimate.com/github/ribbon/event_bus) [![Test Coverage](https://codeclimate.com/github/ribbon/event_bus/badges/coverage.svg)](https://codeclimate.com/github/ribbon/event_bus) [![Build Status](https://semaphoreapp.com/api/v1/projects/bb850102-b137-432b-9cbe-e1824ef4013f/365383/shields_badge.svg)](https://semaphoreapp.com/ribbon/event_bus) [![Inch CI](http://inch-ci.org/github/ribbon/event_bus.png)](http://inch-ci.org/github/ribbon/event_bus)
+[![Code Climate](https://codeclimate.com/github/payout/announcer/badges/gpa.svg)](https://codeclimate.com/github/payout/announcer) [![Test Coverage](https://codeclimate.com/github/payout/announcer/badges/coverage.svg)](https://codeclimate.com/github/payout/announcer) [![Build Status](https://semaphoreapp.com/api/v1/projects/bb850102-b137-432b-9cbe-e1824ef4013f/365383/shields_badge.svg)](https://semaphoreapp.com/payout/announcer) [![Inch CI](http://inch-ci.org/github/payout/announcer.png)](http://inch-ci.org/github/payout/announcer)
 
-# ribbon-event_bus
+# Announcer
 
 A simple but flexible event bus for Ruby. With the recommended settings, it
 processes event subscriptions on Resque asynchronously. Each event subscription
@@ -16,7 +16,7 @@ several Rails apps can subscribe to each others events.
 Add this to your Gemfile:
 
 ```
-gem 'ribbon-event_bus'
+gem 'announcer'
 ```
 
 Then run
@@ -28,7 +28,7 @@ bundle
 Or you can install it manually:
 
 ```
-gem install ribbon-event_bus
+gem install announcer
 ```
 
 ## Basic Usage
@@ -38,8 +38,8 @@ gem install ribbon-event_bus
 Below is an example of configuring the event bus.
 
 ```Ruby
-# config/initializers/event_bus.rb
-EventBus.config do
+# config/initializers/announcer.rb
+Announcer.config do
   publish_to :resque
 end
 ```
@@ -53,13 +53,13 @@ Define subscriptions in initializers.
 For example:
 
 ```Ruby
-# config/initializers/event_bus/image_processing_subcriptions.rb
+# config/initializers/announcer/image_processing_subcriptions.rb
 
-EventBus.subscribe_to(:image_uploaded, priority: 1) do |event|
+Announcer.subscribe_to(:image_uploaded, priority: 1) do |event|
   Image.find(event[:image_id]).process
 end
 
-EventBus.subscribe_to(:image_processed, priority: :medium) do |event|
+Announcer.subscribe_to(:image_processed, priority: :medium) do |event|
   Image.find(event[:image_id]).send_important_email
 end
 ```
@@ -83,7 +83,7 @@ By default, all subscriptions are given the `medium` priority, which is `3` in t
 If you'd like more, or less, priorities, you can set the `subscriptions.max_priority` config value. If you do so, the human readable shortcuts will dynamically conform to the new range, so they're safe to use.
 
 ```ruby
-EventBus.config {
+Announcer.config {
   subscriptions.max_priority = 3
 }
 ```
@@ -103,21 +103,21 @@ To publish events, simply call the #publish method.
 
 ```Ruby
 image = Image.create
-EventBus.publish(:image_uploaded, image_id: image.id)
+Announcer.publish(:image_uploaded, image_id: image.id)
 ```
 
 ## Details
 
 ### Instances
 
-It's possible to have multiple EventBus instances, although this is not necessary for
+It's possible to have multiple Announcer instances, although this is not necessary for
 most use-cases.
 
 For example:
 
 ```ruby
 # Note: instance names must be globally unique!
-synchronous_bus = EventBus.instance("a synchronous event bus")
+synchronous_bus = Announcer.instance("a synchronous event bus")
 synchronous_bus.config { |c| c.publish_to :subscriptions }
 synchronous_bus.subscribe_to(:an_event) { |event| raise event.inspect }
 synchronous_bus.publish(:an_event)
@@ -129,21 +129,21 @@ published on one instance won't be sent to subscriptions on other instances!
 
 ### Publishers
 
-There are currently 4 supported publishers. One of which allows you to define an
+There are currently 5 supported publishers. One of which allows you to define an
 arbitrary block to execute. Note that a publisher doesn't have to submit the event to
 the subscriptions. It can, for example, simply output the event to a log.
 
 It is possible to define multiple publishers for an event bus. They will all be
 called synchronously with the #publish method.
 
-For all publishers, you can define global config values in the `EventBus.config`
+For all publishers, you can define global config values in the `Announcer.config`
 block. Values defined here will apply to all instances of the respective publisher.
 
 You can also specify per publisher configuration values when calling `publish_to`
 in the config block. For example:
 
 ```ruby
-EventBus.config do
+Announcer.config do
   publish_to :resque, publisher_queue: 'another_queue'
   publish_to :remote_resque, redis: Redis.new(url: 'server1')
   publish_to :remote_resque, redis: Redis.new(url: 'server2')
@@ -182,7 +182,7 @@ Same as the above `resque` publisher, but enqueues to the publisher queue asynch
 Uses the same configuration as the `resque` publisher.
 
 ##### Unicorn Note
-If your using unicorn, or forking in general, you need to restart [Celluloid](https://github.com/celluloid/celluloid) after forking. Celluloid is how EventBus handles publishing
+If your using unicorn, or forking in general, you need to restart [Celluloid](https://github.com/celluloid/celluloid) after forking. Celluloid is how Announcer handles publishing
 events asynchronously.
 
 For unicorn, in your config (e.g., `unicorn.rb`) you need to specify the following in your `after_fork` callback:
@@ -213,7 +213,7 @@ publishers.remote_resque.**queue** | `'publisher'` | The queue on the redis serv
 You can also specify custom blocks as publishers:
 
 ```ruby
-EventBus.config do
+Announcer.config do
   publish_to do |event|
     puts "An event has occurred: #{event.name} #{event.params}"
   end
@@ -224,7 +224,7 @@ Be careful not to do anything too time consuming, as all publishers are executed
 synchronously when you publish an event.
 
 ### Plugins
-EventBus uses the [ribbon/plugins](https://github.com/ribbon/plugins) gem and currently supports the following hooks:
+Announcer uses the [payout/plugins](https://github.com/payout/plugins) gem and currently supports the following hooks:
  * publish
  * resque_publish
  * subscription
@@ -232,7 +232,7 @@ EventBus uses the [ribbon/plugins](https://github.com/ribbon/plugins) gem and cu
 You can enable plugins via the config block:
 
 ```ruby
-EventBus.config {
+Announcer.config {
   plugin :plugin_name, additional_args: 'go here'
 }
 ```
@@ -240,14 +240,14 @@ EventBus.config {
 Or outside a config block via the `Instance#plugin` method:
 
 ```ruby
-EventBus.plugin(:plugin_name, additional_args: 'go here')
+Announcer.plugin(:plugin_name, additional_args: 'go here')
 ```
 
 There is currently one built-in plugin: `:logging`.
 #### Logging
 
 ```ruby
-EventBus.config {
+Announcer.config {
   # Default options shown here.
   plugin :logging, logger: Logger.new(STDOUT), level: :info, log_exceptions: false
 }
@@ -259,7 +259,7 @@ When this plugin is enabled, debug messages will be logged before and after each
 You can also add your own custom plugins:
 
 ```ruby
-EventBus.config {
+Announcer.config {
   plugin {
     before_publish do |event|
       # Do something
@@ -276,4 +276,4 @@ EventBus.config {
 }
 ```
 
-See [ribbon/plugins](https://github.com/ribbon/plugins) for more details on defining plugins.
+See [payout/plugins](https://github.com/payout/plugins) for more details on defining plugins.

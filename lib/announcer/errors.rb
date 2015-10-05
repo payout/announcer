@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   module Errors
     class Error < StandardError; end
     class DuplicateInstanceNameError < Error; end

@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   module Publishers
     class Publisher
       include Mixins::HasInstance

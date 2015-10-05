@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   module Mixins
     module HasConfig
       def self.included(base)

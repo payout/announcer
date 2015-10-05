@@ -1,17 +1,17 @@
-module Ribbon::EventBus
+module Announcer
   module Publishers
     autoload(:Publisher,
-      'ribbon/event_bus/publishers/publisher')
+      'announcer/publishers/publisher')
     autoload(:ProcPublisher,
-      'ribbon/event_bus/publishers/proc_publisher')
+      'announcer/publishers/proc_publisher')
     autoload(:SubscriptionsPublisher,
-      'ribbon/event_bus/publishers/subscriptions_publisher')
+      'announcer/publishers/subscriptions_publisher')
     autoload(:ResquePublisher,
-      'ribbon/event_bus/publishers/resque_publisher')
+      'announcer/publishers/resque_publisher')
     autoload(:RemoteResquePublisher,
-      'ribbon/event_bus/publishers/remote_resque_publisher')
+      'announcer/publishers/remote_resque_publisher')
     autoload(:AsyncResquePublisher,
-      'ribbon/event_bus/publishers/async_resque_publisher')
+      'announcer/publishers/async_resque_publisher')
 
     module_function
     def load_for_instance(instance)

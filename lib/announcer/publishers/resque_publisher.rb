@@ -1,6 +1,6 @@
 require 'resque'
 
-module Ribbon::EventBus
+module Announcer
   module Publishers
     class ResquePublisher < Publisher
       config_key :resque
@@ -79,7 +79,7 @@ module Ribbon::EventBus
       def _disallow_multiple_per_instance
         if instance.has_publisher?(:resque)
           raise Errors::PublisherError,
-            "cannot have multiple ResquePublishers in an EventBus instance"
+            "cannot have multiple ResquePublishers in an Announcer instance"
         end
       end
     end

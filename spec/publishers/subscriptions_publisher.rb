@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   module Publishers
     RSpec.describe SubscriptionsPublisher do
     end

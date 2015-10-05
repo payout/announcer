@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   RSpec.describe Config do
     it 'should allow nested values' do
       c = Config.new { |c|

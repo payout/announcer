@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Ribbon::EventBus
+module Announcer
   module Publishers
     RSpec.describe ResquePublisher do
       before(:all) do
@@ -11,7 +11,7 @@ module Ribbon::EventBus
         Resque.inline = false
       end
 
-      let(:instance) { EventBus.instance("resque_test_#{SecureRandom.hex}") }
+      let(:instance) { Announcer.instance("resque_test_#{SecureRandom.hex}") }
       let(:event) { Event.new(:test, instance: instance) }
       let(:subscription) { instance.subscribe_to(:test, priority: 1) { |e| @subscriptions_run = true } }
 

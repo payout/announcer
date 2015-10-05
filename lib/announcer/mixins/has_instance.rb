@@ -1,8 +1,8 @@
-module Ribbon
-  module EventBus::Mixins
+module Announcer
+  module Mixins
     module HasInstance
       def instance
-        (defined?(@instance) && @instance) || EventBus.instance
+        (defined?(@instance) && @instance) || Announcer.instance
       end
 
       def plugins

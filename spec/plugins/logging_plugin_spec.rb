@@ -1,7 +1,7 @@
 require 'resque'
 require 'securerandom'
 
-module Ribbon::EventBus
+module Announcer
   module Plugins
     RSpec.describe LoggingPlugin do
       let(:instance) { Instance.new("logging_plugin_test_#{SecureRandom.hex}") }
@@ -105,4 +105,4 @@ module Ribbon::EventBus
       end # with resque publisher
     end # LoggingPlugin
   end # Plugins
-end # Ribbon::EventBus
+end # Announcer

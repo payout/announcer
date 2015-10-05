@@ -1,6 +1,6 @@
 require 'logger'
 
-module Ribbon::EventBus
+module Announcer
   module Plugins
     class LoggingPlugin < Plugin
       config_key :logging

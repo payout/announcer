@@ -8,7 +8,7 @@ require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
-require "ribbon/event_bus"
+require "announcer"
 
 module Dummy
   class Application < Rails::Application
