@@ -1,6 +1,6 @@
 require 'digest'
 
-module Ribbon::EventBus
+module Announcer
   class Subscription
     include Mixins::HasInstance
     include Mixins::HasConfig
@@ -61,14 +61,14 @@ module Ribbon::EventBus
 
       # Will be something like:
       # "/path/to/file.rb:47:in `method_name'"
-      non_event_bus_caller = caller.find { |c| !c.start_with?(path) }
+      non_announcer_caller = caller.find { |c| !c.start_with?(path) }
 
-      unless non_event_bus_caller
+      unless non_announcer_caller
         # This is not expected to occur.
-        raise Errors::SubscriptionError, "Could not find non-EventBus caller"
+        raise Errors::SubscriptionError, "Could not find non-Announcer caller"
       end
 
-      non_event_bus_caller
+      non_announcer_caller
     end
 
     ##
@@ -162,4 +162,4 @@ module Ribbon::EventBus
       end
     end
   end # Event
-end # Ribbon::EventBus
+end # Announcer

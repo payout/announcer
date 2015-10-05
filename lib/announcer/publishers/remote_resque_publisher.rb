@@ -2,7 +2,7 @@ require 'uri'
 require 'redis'
 require 'redis/namespace'
 
-module Ribbon::EventBus
+module Announcer
   module Publishers
     class RemoteResquePublisher < Publisher
       config_key :remote_resque

@@ -1,4 +1,4 @@
-module Ribbon::EventBus::Publishers
+module Announcer::Publishers
   class SubscriptionsPublisher < Publisher
     def publish(event)
       super

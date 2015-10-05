@@ -1,17 +1,17 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem's version:
-require "ribbon/event_bus/version"
+require "announcer/version"
 
 Gem::Specification.new do |s|
-  s.name        = 'ribbon-event_bus'
-  s.version     = Ribbon::EventBus::VERSION
-  s.homepage    = "http://github.com/ribbon/event_bus"
+  s.name        = 'announcer'
+  s.version     = Announcer::VERSION
+  s.homepage    = "http://github.com/payout/announcer"
   s.license     = 'BSD'
-  s.summary     = "An asynchronous event bus for Ruby."
+  s.summary     = "A flexible event bus for Ruby."
   s.description = s.summary
   s.authors     = ["Robert Honer"]
-  s.email       = ['robert@ribbonpayments.com']
+  s.email       = ['robert@payout.com']
   s.files       = Dir['lib/**/*.rb'] + Dir['config/**/*']
 
   s.add_dependency 'ribbon-plugins', '~> 0.2', '>= 0.2.4'

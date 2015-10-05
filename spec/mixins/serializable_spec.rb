@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Ribbon::EventBus
+module Announcer
   module Mixins
     class Nestable
       include Serializable

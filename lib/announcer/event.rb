@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   class Event
     include Mixins::HasInstance
     include Mixins::HasConfig
@@ -63,7 +63,7 @@ module Ribbon::EventBus
 
     ###
     # Sanitize the event params.
-    # Prevents passing values that could cause errors later in the EventBus.
+    # Prevents passing values that could cause errors later in Announcer.
     ###
     def _sanitize_params(params)
       Hash[params.map { |key, value| [key.to_sym, _sanitize_value(key, value)] }].freeze
@@ -90,4 +90,4 @@ module Ribbon::EventBus
       end
     end
   end # Event
-end # Ribbon::EventBus
+end # Announcer

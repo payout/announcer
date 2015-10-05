@@ -2,7 +2,7 @@ require 'resque'
 require 'redis'
 require 'celluloid/current'
 
-module Ribbon::EventBus
+module Announcer
   module Publishers
     class AsyncResquePublisher < Publisher
       config_key :resque
@@ -15,7 +15,7 @@ module Ribbon::EventBus
       end
 
       def worker_id
-        @__worker_id ||= "event_bus_resque_worker_#{object_id}".to_sym
+        @__worker_id ||= "announcer_resque_worker_#{object_id}".to_sym
       end
 
       ##

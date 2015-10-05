@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Ribbon::EventBus
+module Announcer
   RSpec.describe Instance do
     it 'should raise error on duplicate instance names' do
       Instance.new(:test_duplicate_name)
@@ -99,7 +99,7 @@ module Ribbon::EventBus
     context '#serialize', :serialize do
       # Need to generate a random instance name since it's stored globally.
       # It needs to be unique for each test.
-      subject { EventBus.instance("serialize_test_#{SecureRandom.hex}".to_sym) }
+      subject { Announcer.instance("serialize_test_#{SecureRandom.hex}".to_sym) }
 
       let(:serialized) { subject.serialize }
       let(:deserialized) { Instance.deserialize(serialized) }

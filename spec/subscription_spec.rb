@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   RSpec.describe Subscription do
     let(:event_name) { :name }
     let(:params) { Hash.new }

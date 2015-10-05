@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ribbon-event_bus (0.5.1)
+    announcer (0.5.1)
       celluloid (>= 0.17.2)
       ribbon-plugins (~> 0.2, >= 0.2.4)
 
@@ -148,13 +148,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  announcer!
   codeclimate-test-reporter
   mock_redis
   rails (~> 4.0.13)
   redis
   redis-namespace
   resque (~> 1.25.2)
-  ribbon-event_bus!
   rspec
   rspec-rails
   sqlite3

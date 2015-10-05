@@ -1,6 +1,6 @@
 require 'base64'
 
-module Ribbon::EventBus
+module Announcer
   module Mixins
     module Serializable
       MAGIC = :SRLZ
@@ -79,11 +79,11 @@ module Ribbon::EventBus
         ###
 
         def _serializable_encode_class(klass)
-          klass.name.to_s.sub('Ribbon::EventBus::', '').to_sym
+          klass.name.to_s.sub('Announcer::', '').to_sym
         end
 
         def _serializable_decode_class(encoded_klass)
-          Ribbon::EventBus.const_get(encoded_klass.to_s)
+          Announcer.const_get(encoded_klass.to_s)
         end
 
         ###

@@ -1,6 +1,6 @@
 require 'ribbon/plugins'
 
-module Ribbon::EventBus
+module Announcer
   module Plugins
     class Plugin < Ribbon::Plugins::Plugin
       include Mixins::HasInstance

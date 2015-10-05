@@ -1,6 +1,6 @@
 require 'yaml'
 
-module Ribbon::EventBus
+module Announcer
   class Config
     # Putting this here instead of in Errors because I may move this into a
     # separate gem.
@@ -129,4 +129,4 @@ module Ribbon::EventBus
       @_nested ||= Hash.new { |hash, key| hash[key] = UndefinedValue.new }
     end
   end # Config
-end # Ribbon::EventBus
+end # Announcer

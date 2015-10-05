@@ -1,11 +1,11 @@
-module Ribbon::EventBus
+module Announcer
   RSpec.describe Event do
     it 'should convert name to symbol' do
       expect(Event.new('name').name).to eq :name
     end
 
     context '#serialize' do
-      let(:instance) { EventBus.instance("serialize_test_#{SecureRandom.hex}") }
+      let(:instance) { Announcer.instance("serialize_test_#{SecureRandom.hex}") }
       let(:params) {
         {
           int: 1234,

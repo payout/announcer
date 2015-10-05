@@ -1,4 +1,4 @@
-module Ribbon::EventBus
+module Announcer
   module Publishers
     class ProcPublisher < Publisher
       def initialize(instance=nil, &block)
