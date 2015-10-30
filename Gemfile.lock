@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    announcer (0.5.1)
+    announcer (0.5.2)
       celluloid (>= 0.17.2)
       plugins (~> 0.3.0, >= 0.3.0)
 
